@@ -14,3 +14,9 @@ To use: Load the sketch 'esp8266_http_io.ino' to your esp board with the Arduino
 IDE and ESP8266 board addition. Open the serial monitor in the IDE and get the
 IP returned, then add that to the DEVICE_URL in the example you run from on of
 the examples included.
+
+TODO:
+   - Add mDNS registration and or other like services
+   - Add some form of security (thinking stages now)
+   - Possibly add a io control page for browser IO changes
+   
