@@ -19,5 +19,5 @@ TODO:
    - Add mDNS registration and or other like services
    - Add some form of security (thinking stages now)
    - Possibly add a io control page for browser IO changes
-   - Add access to Servo library
-      
+   - Add servo calls to example
+   - Add mDNS query to example
