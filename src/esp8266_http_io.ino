@@ -11,6 +11,8 @@
 */
 
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+#include <Servo.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -19,27 +21,47 @@ bool request_is (String, String);
 char * getstrfld (char *strbuf, int fldno, int ofset, char *sep, char *retstr);
 void serverloop (void);
 char * strpbrk (const char *s1, const char *s2);
+
+// Exposed functions
 void DigitalRead (char *parms);
 void DigitalWrite (char *parms);
 void PinMode (char *parms);
 void AnalogRead (char *parms);
 void AnalogWrite (char *parms);
+void ServoOpen (char *parms);
+void ServoClose (char *parms);
+void ServoSet (char *parms);
+void ServoRead (char *parms);
 
 // Define your Wifi info here
-#define SSID "YOUR SSID"
-#define PASSWD "YOUR PASSWD"
 
 // Define to get extra info from the Serial port
 //#define DEBUG
 
 // Globals
 WiFiServer server (80);
+// multicast DNS responder
+MDNSResponder mdns;
 char json_ret[256]; // Increase if you need more than 255 bytes returned.
+// Allow for at least 8 servos.
+struct usrservos {
+   Servo servo;
+   int pin;
+} userservos[8];
+
+int servosinuse = 0;
 
 void setup ( )
 {
     Serial.begin (9600);
     delay (10);
+
+    servosinuse = 0;
+
+    // Mark all servo slots as free on start.
+	  for (int i = 0; i < 8; i++) {
+	     userservos[i].pin = -1;
+	  }
 
     // Connect to the WiFi network
     Serial.print ("\nConnecting to: ");
@@ -53,6 +75,19 @@ void setup ( )
     }
 
     Serial.println ("\nWiFi connected");
+
+    // Set up mDNS responder:
+    // - first argument is the domain name, in this example
+    //   the fully-qualified domain name is "esp8266.local"
+    // - second argument is the IP address to advertise
+    //   we send our IP address on the WiFi network
+    if (!mdns.begin (BOARDNAME, WiFi.localIP ( ))) {
+      Serial.println ("Error setting up MDNS responder!");
+      while (1) {
+         delay (500);
+      }
+    }
+    Serial.println ("mDNS responder started");
 
     // Start the tcp listener
     server.begin ( );
@@ -162,6 +197,54 @@ void serverloop ( )
           Serial.println (req_parms);
       #endif
       AnalogWrite (req_parms);
+   }
+
+   if (request_is (request, "/servoOpen")) {
+      // Make a temp array to hold the
+      req_chararray = (char *) malloc (request.length ( ) + 1);
+      request.toCharArray (req_chararray, request.length ( ));
+      getstrfld (req_chararray, 2, 0, (char *)" ?", req_parms);
+      free (req_chararray);
+      #ifdef DEBUG
+          Serial.println (req_parms);
+      #endif
+      ServoOpen (req_parms);
+   }
+
+   if (request_is (request, "/servoClose")) {
+      // Make a temp array to hold the
+      req_chararray = (char *) malloc (request.length ( ) + 1);
+      request.toCharArray (req_chararray, request.length ( ));
+      getstrfld (req_chararray, 2, 0, (char *)" ?", req_parms);
+      free (req_chararray);
+      #ifdef DEBUG
+          Serial.println (req_parms);
+      #endif
+      ServoClose (req_parms);
+   }
+
+   if (request_is (request, "/servoRead")) {
+      // Make a temp array to hold the
+      req_chararray = (char *) malloc (request.length ( ) + 1);
+      request.toCharArray (req_chararray, request.length ( ));
+      getstrfld (req_chararray, 2, 0, (char *)" ?", req_parms);
+      free (req_chararray);
+      #ifdef DEBUG
+          Serial.println (req_parms);
+      #endif
+      ServoRead (req_parms);
+   }
+
+   if (request_is (request, "/servoWrite")) {
+      // Make a temp array to hold the
+      req_chararray = (char *) malloc (request.length ( ) + 1);
+      request.toCharArray (req_chararray, request.length ( ));
+      getstrfld (req_chararray, 2, 0, (char *)" ?", req_parms);
+      free (req_chararray);
+      #ifdef DEBUG
+          Serial.println (req_parms);
+      #endif
+      ServoSet (req_parms);
    }
 
    // Return an HTTP 200 Ok
@@ -276,9 +359,94 @@ void AnalogWrite (char *parms)
    sprintf (json_ret, "{\n\t\"return_code\": %d\n}", return_code);
 }
 
-/*
-   Utility functions to help us along.
-*/
+void ServoOpen (char *parms)
+{
+	 int i;
+   int pinNumber;
+   char pinStr[3];
+   int return_code = 0;
+
+   pinNumber = atoi (parms);
+
+ 	 servosinuse++;
+   if (servosinuse >= 9) {
+		  return_code = 1; // All servos inuse.
+	 } else {
+    	 for (i = 0; i < 9; i++) {
+    		  if (userservos[i].pin == -1) {
+    			   // Zap any old attachment.
+    			   userservos[i].servo.detach ( );
+    			   userservos[i].pin = pinNumber;
+    			   userservos[i].servo.attach (pinNumber);
+             return_code = 0;
+    			   break;
+    		  }
+    	 }
+   }
+
+   // Return the servo array element index used.
+   sprintf (json_ret, "{\n\t\"data_value\": \"%d\",\n\t\"return_code\": %d\n}",
+            i, return_code);
+}
+
+void ServoClose (char *parms)
+{
+   int indexNumber;
+   int return_code = 0;
+
+   indexNumber = atoi (parms);
+
+ 	 if (indexNumber < 0 || indexNumber > 8) {
+      return_code = 1;
+   } else {
+      userservos[indexNumber].pin = -1;
+      servosinuse--;
+      userservos[indexNumber].servo.detach ( );
+   }
+
+   sprintf (json_ret, "{\n\t\"return_code\": %d\n}", return_code);
+}
+
+void ServoSet (char *parms)
+{
+   int indexNumber, value;
+   int return_code = 0;
+   char indexStr[3];
+   char valueStr[6];
+
+   getstrfld (parms, 0, 0, (char *)",", indexStr);
+   getstrfld (parms, 1, 0, (char *)",", valueStr);
+   indexNumber = atoi (indexStr);
+   value = atoi (valueStr);
+
+   if (userservos[indexNumber].pin != -1)
+      if (value > 180) // Write MS to servo
+         userservos[indexNumber].servo.writeMicroseconds (value);
+      else // Write angle to servo
+         userservos[indexNumber].servo.write (value);
+   else
+      return_code = 1;
+
+   sprintf (json_ret, "{\n\t\"return_code\": %d\n}", return_code);
+}
+
+void ServoRead (char *parms)
+{
+   int indexNumber, return_code = 0, raw_val = 0;
+   char indexStr[3];
+
+   getstrfld (parms, 0, 0, (char *)",", indexStr);
+   indexNumber = atoi (indexStr);
+
+   if (userservos[indexNumber].pin != -1)
+      raw_val = (userservos[indexNumber].servo.read ( ));
+   else
+      return_code = 1;
+
+   sprintf (json_ret, "{\n\t\"data_value\": \"%d\",\n\t\"return_code\": 0\n}",
+            raw_val);
+}
+
 bool request_is (String request, String reqdata)
 {
    return (request.indexOf (reqdata) != -1 ? 1 : 0);
