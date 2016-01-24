@@ -37,6 +37,8 @@ void ServoRead (char *parms);
 #define SSID ""
 #define PASSWD ""
 
+#define BOARDNAME "espio_01"
+
 // Define to get extra info from the Serial port
 //#define DEBUG
 
@@ -61,15 +63,15 @@ void setup ( )
     servosinuse = 0;
 
     // Mark all servo slots as free on start.
-	  for (int i = 0; i < 8; i++) {
-	     userservos[i].pin = -1;
-	  }
+    for (int i = 0; i < 8; i++) {
+        userservos[i].pin = -1;
+    }
 
     // Connect to the WiFi network
     Serial.print ("\nConnecting to: ");
     Serial.println (SSID);
 
-    WiFi.begin (Ssid, Passwd);
+    WiFi.begin (SSID, PASSWD);
 
     while (WiFi.status ( ) != WL_CONNECTED) {
        delay (500);
@@ -363,27 +365,26 @@ void AnalogWrite (char *parms)
 
 void ServoOpen (char *parms)
 {
-	 int i;
+   int i;
    int pinNumber;
-   char pinStr[3];
    int return_code = 0;
 
    pinNumber = atoi (parms);
 
- 	 servosinuse++;
-   if (servosinuse >= 9) {
-		  return_code = 1; // All servos inuse.
-	 } else {
-    	 for (i = 0; i < 9; i++) {
-    		  if (userservos[i].pin == -1) {
-    			   // Zap any old attachment.
-    			   userservos[i].servo.detach ( );
-    			   userservos[i].pin = pinNumber;
-    			   userservos[i].servo.attach (pinNumber);
-             return_code = 0;
-    			   break;
-    		  }
-    	 }
+   servosinuse++;
+   if (servosinuse >= 8) {
+      return_code = 1; // All servos inuse.
+   } else {
+      for (i = 0; i < 8; i++) {
+         if (userservos[i].pin == -1) {
+            // Zap any old attachment.
+            userservos[i].servo.detach ( );
+            userservos[i].pin = pinNumber;
+            userservos[i].servo.attach (pinNumber);
+            return_code = 0;
+            break;
+         }
+      }
    }
 
    // Return the servo array element index used.
@@ -398,7 +399,7 @@ void ServoClose (char *parms)
 
    indexNumber = atoi (parms);
 
- 	 if (indexNumber < 0 || indexNumber > 8) {
+   if (indexNumber < 0 || indexNumber > 8) {
       return_code = 1;
    } else {
       userservos[indexNumber].pin = -1;
