@@ -34,6 +34,8 @@ void ServoSet (char *parms);
 void ServoRead (char *parms);
 
 // Define your Wifi info here
+#define SSID ""
+#define PASSWD ""
 
 // Define to get extra info from the Serial port
 //#define DEBUG
@@ -67,7 +69,7 @@ void setup ( )
     Serial.print ("\nConnecting to: ");
     Serial.println (SSID);
 
-    WiFi.begin (SSID, PASSWD);
+    WiFi.begin (Ssid, Passwd);
 
     while (WiFi.status ( ) != WL_CONNECTED) {
        delay (500);
