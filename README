@@ -2,7 +2,7 @@ ESP8266 http io server.
 
 Version 0.0001 - Alpha
 
-Gola in life:
+Goal in life:
   Exposes basic wiring functions: pinMode, digitalRead, digitalWrite,
   analogRead and analogWrite via a http server. Kind of Rest like, but NOT
   fully Restful. The returned data is in json format.
