@@ -1,0 +1,38 @@
+<!--
+   ESP8266 http io server test.
+
+   Gola in life:
+     Tests exposed basic wiring functions: pinMode, digitalRead, digitalWrite,
+     analogRead and analogWrite from the ESP8266 http server.
+
+   Written By - Scott Beasley 2016.
+   Public domain. Free to use or change. Enjoy :)
+-->
+<html>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+          type="text/javascript" charset="utf-8">
+  </script>
+<head>
+<title>ESP8266 HTTP IO TEST</title>
+<script type="text/javascript">
+var DEVICE_URL = 'http://espio_01.local'
+
+pinMode ('16','OUTPUT'); // Set the pin as OUTPUT
+
+function pinMode (pin, state) {
+   var requestURL = DEVICE_URL + "/pinMode?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function digitalWrite (pin, state) {
+   var requestURL = DEVICE_URL + "/digitalWrite?" + pin + "," + state;
+   $.get (requestURL);
+}
+</script>
+</head>
+<center>
+  LED --> 
+  <button onclick="digitalWrite ('16','LOW')">Led On</button>
+  <button onclick="digitalWrite ('16','HIGH')">Led Off</button>
+</center>
+</html>
