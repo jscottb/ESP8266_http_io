@@ -46,8 +46,8 @@ function analogRead (pin, callback) {
 }
 
 function loop ( ) {
-   var d3 = digitalRead ("3", d3_display);
-   var d3 = analogRead ("0", a0_display);
+   digitalRead ("3", d3_display);
+   analogRead ("0", a0_display);
 
    if (DO_WORK)
       tmr = setTimeout (loop, 1000);
