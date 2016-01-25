@@ -1,0 +1,85 @@
+<!--
+   ESP8266 http io server test.
+
+   Goal in life:
+     Real GPIO and A0, dispaling results.
+
+   Written By - Scott Beasley 2016.
+   Public domain. Free to use or change. Enjoy :)
+-->
+<html>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+          type="text/javascript" charset="utf-8">
+  </script>
+<head>
+<title>ESP8266 Browser Blink</title>
+<script type="text/javascript">
+var DEVICE_URL = 'http://espio_01.local'
+var LED_STATE = 'LOW'
+var DO_WORK = true
+
+pinMode ('3','INPUT'); // Set the pin as INPUT
+var tmr = setTimeout (loop, 1000);
+
+function pinMode (pin, state) {
+   var requestURL = DEVICE_URL + "/pinMode?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function digitalWrite (pin, state) {
+   var requestURL = DEVICE_URL + "/digitalWrite?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function digitalRead (pin, callback) {
+   var requestURL = DEVICE_URL + "/digitalRead?" + pin;
+   $.getJSON (requestURL, function (data) {
+         callback (data.data_value);
+   });
+}
+
+function analogRead (pin, callback) {
+   var requestURL = DEVICE_URL + "/analogRead?" + pin;
+   $.getJSON (requestURL, function (data) {
+         callback (data.data_value);
+   });
+}
+
+function loop ( ) {
+   var d3 = digitalRead ("3", d3_display);
+   var d3 = analogRead ("0", a0_display);
+
+   if (DO_WORK)
+      tmr = setTimeout (loop, 1000);
+}
+
+function setWorkLoop (state) {
+   if (state == 'ON') {
+      tmr = setTimeout (loop, 1000);
+      DO_WORK = true;
+   }
+
+   if (state == 'OFF') {
+      clearTimeout (tmr);
+      DO_WORK = false;
+   }
+}
+
+// Callback funtions to update the page elements
+function d3_display (state) {
+     $("#d3").val (state);
+}
+
+function a0_display (state) {
+     $("#a0").val (state);
+}
+</script>
+</head>
+<center>
+  <p>Work loop:
+  <button onclick="setWorkLoop ('ON')">Work Loop On</button>
+  <button onclick="setWorkLoop ('OFF')">Work Loop Off</button></p>
+  <p>D3: <input type="text" id="d3" value="0"></p>
+  <p>A0: <input type="text" id="a0" value="0"></p>
+</center>
+</html>
