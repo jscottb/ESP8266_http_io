@@ -122,7 +122,7 @@ function setDigIO (pin) {
 function setAsIO_in (pin) {
    $("#ddd" + pin).hide ( );
    $("#dd" + pin).css({"background-color": "blue"});
-//   io_pins[pin].direction = "INPUT";
+   io_pins[pin].direction = "INPUT";
    pin = io_pins[parseInt (pin)].pin.substring (1, io_pins[pin].pin.length);
    pinMode (pin, "INPUT");
 }
@@ -130,7 +130,7 @@ function setAsIO_in (pin) {
 function setAsIO_out (pin) {
    $("#ddd" + pin).show ( );
    $("#dd" + pin).css({"background-color": "red"});
-//   io_pins[pin].direction = "OUTPUT";
+   io_pins[pin].direction = "OUTPUT";
    pin = io_pins[parseInt (pin)].pin.substring (1, io_pins[pin].pin.length);
    pinMode (pin, "OUTPUT");
 }
