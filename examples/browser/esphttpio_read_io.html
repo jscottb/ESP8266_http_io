@@ -15,7 +15,6 @@
 <title>ESP8266 Browser IO Read</title>
 <script type="text/javascript">
 var DEVICE_URL = 'http://espio_01.local'
-var LED_STATE = 'LOW'
 var DO_WORK = true
 
 pinMode ('3','INPUT'); // Set the pin as INPUT
@@ -34,14 +33,14 @@ function digitalWrite (pin, state) {
 function digitalRead (pin, callback) {
    var requestURL = DEVICE_URL + "/digitalRead?" + pin;
    $.getJSON (requestURL, function (data) {
-         callback (data.data_value);
+        callback (data.data_value);
    });
 }
 
 function analogRead (pin, callback) {
    var requestURL = DEVICE_URL + "/analogRead?" + pin;
    $.getJSON (requestURL, function (data) {
-         callback (data.data_value);
+        callback (data.data_value);
    });
 }
 

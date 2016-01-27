@@ -1,0 +1,238 @@
+<!--
+   ESP8266 http io server test.
+
+   Goal in life:
+     Read GPIO's and A0, displaying results.
+
+   Written By - Scott Beasley 2016.
+   Public domain. Free to use or change. Enjoy :)
+
+   THIS EXAMPLE IS VERY ALPHA CODE!!!! A work in progress.
+-->
+<html>
+<body onload="setIOlines ( )">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+          type="text/javascript" charset="utf-8">
+  </script>
+<head>
+<title>ESP8266 Browser IO Control Panel</title>
+<script type="text/javascript">
+var DEVICE_URL = 'http://espio_01.local'
+var DO_WORK = true
+var work_delay = 6000 // READ INPUTS every 6 seconds
+var io_pins = [
+    {pin: "D0", type: 'GPIO', direction: "INPUT"},
+    {pin: "D1", type: 'GPIO', direction: "INPUT"},
+    {pin: "D2", type: 'GPIO', direction: "INPUT"},
+    {pin: "D3", type: 'GPIO', direction: "INPUT"},
+    {pin: "D4", type: 'GPIO', direction: "INPUT"},
+    {pin: "D5", type: 'GPIO', direction: "INPUT"},
+    {pin: "D6", type: 'GPIO', direction: "INPUT"},
+    {pin: "D7", type: 'GPIO', direction: "INPUT"},
+    {pin: "D8", type: 'GPIO', direction: "INPUT"},
+    {pin: "A0", type: 'ANALOG', direction: "INPUT"}
+];
+
+var tmr = setTimeout (loop, 1000); // Start off 1 sec after load
+
+function pinMode (pin, state) {
+   var requestURL = DEVICE_URL + "/pinMode?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function digitalWrite (pin, state) {
+   var requestURL = DEVICE_URL + "/digitalWrite?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function digitalRead (pin, callback, io) {
+   var requestURL = DEVICE_URL + "/digitalRead?" + pin;
+   $.getJSON (requestURL, function (data) {
+        callback (io, data.data_value);
+   });
+}
+
+function analogRead (pin, callback, io) {
+   var requestURL = DEVICE_URL + "/analogRead?" + pin;
+   $.getJSON (requestURL, function (data) {
+        callback (io, data.data_value);
+   });
+}
+
+function loop ( ) {
+   for (var i = 0; i < io_pins.length; i++) {
+      if (io_pins[i].type == 'GPIO') {
+          if (io_pins[i].direction == 'INPUT') {
+             var pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
+             digitalRead (pin, io_display, "d" + pin);
+          }
+      }
+   }
+
+   analogRead ("0", io_display, "a0");
+
+   if (DO_WORK)
+      tmr = setTimeout (loop, work_delay);
+}
+
+function setIOlines ( ) {
+    var pin;
+
+    for (var i = 0; i < io_pins.length; i++) {
+        pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
+        if (io_pins[i].type == 'GPIO') {
+            if (io_pins[i].direction == 'OUTPUT') {
+               setAsIO_out (pin);
+               $("#dd" + pin).css({"background-color": "red"});
+            }
+            if (io_pins[i].direction == 'INPUT') {
+               setAsIO_in (pin);
+               $("#dd" + pin).css({"background-color": "blue"});
+            }
+            $("#bo" + i).css({"background-color": "red"});
+            $("#bi" + i).css({"background-color": "blue"});
+        }
+    }
+}
+
+function setWorkLoop (state) {
+   if (state == 'ON') {
+      tmr = setTimeout (loop, work_delay);
+      DO_WORK = true;
+   }
+
+   if (state == 'OFF') {
+      clearTimeout (tmr);
+      DO_WORK = false;
+   }
+}
+
+function setDigIO (pin) {
+   var value = $("#d" + pin).val ();
+   digitalWrite (pin, value);
+}
+
+function setAsIO_in (pin) {
+   $("#ddd" + pin).hide ( );
+   $("#dd" + pin).css({"background-color": "blue"});
+   pinMode (pin, "INPUT");
+   io_pins[pin].direction = 'INPUT';
+}
+
+function setAsIO_out (pin) {
+   $("#ddd" + pin).show ( );
+   $("#dd" + pin).css({"background-color": "red"});
+   pinMode (pin, "OUTPUT");
+   io_pins[pin].direction = 'OUTPUT';
+}
+
+// Callback funtion to update the page elements
+function io_display (io, state) {
+     $("#" + io).val (state);
+}
+</script>
+</head>
+<center>
+  <p>Work loop:
+  <button onclick="setWorkLoop ('ON')">Work Loop On</button>
+  <button onclick="setWorkLoop ('OFF')">Work Loop Off</button></p>
+  <table>
+    <tr>
+       <td><div id="dd0">D0: </div></td>
+       <td>
+           <input type="hidden" id="dir0" value="0">
+           <input type="text" id="d0" value="0">
+       </td>
+       <td><div id="ddd0"><button onclick="setDigIO ('0')">Set</button></div></td>
+       <td><button id="bi0" onclick="setAsIO_in ('0')">INPUT</button></td>
+       <td><button id="bo0" onclick="setAsIO_out ('0')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd1">D1: </div></td>
+       <td>
+           <input type="hidden" id="dir1" value="0">
+           <input type="text" id="d1" value="0">
+       </td>
+       <td><div id="ddd1"><button onclick="setDigIO ('1')">Set</button></div></td>
+       <td><button id="bi1" onclick="setAsIO_in ('1')">INPUT</button></td>
+       <td><button id="bo1" onclick="setAsIO_out ('1')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd2">D2: </div></td>
+       <td>
+           <input type="hidden" id="dir2" value="0">
+           <input type="text" id="d2" value="0">
+       </td>
+       <td><div id="ddd2"><button onclick="setDigIO ('2')">Set</button></div></td>
+       <td><button id="bi2" onclick="setAsIO_in ('2')">INPUT</button></td>
+       <td><button id="bo2" onclick="setAsIO_out ('2')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd3">D3: </div></td>
+       <td>
+           <input type="hidden" id="dir3" value="0">
+           <input type="text" id="d3" value="0">
+       </td>
+       <td><div id="ddd3"><button onclick="setDigIO ('3')">Set</button></div></td>
+       <td><button id="bi3" onclick="setAsIO_in ('3')">INPUT</button></td>
+       <td><button id="bo3" onclick="setAsIO_out ('3')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd4">D4: </div></td>
+       <td>
+           <input type="hidden" id="dir4" value="0">
+           <input type="text" id="d4" value="0">
+       </td>
+       <td><div id="ddd4"><button onclick="setDigIO ('4')">Set</button></div></td>
+       <td><button id="bi4" onclick="setAsIO_in ('4')">INPUT</button></td>
+       <td><button id="bo4" onclick="setAsIO_out ('4')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd5">D5: </div></td>
+       <td>
+           <input type="hidden" id="dir5" value="0">
+           <input type="text" id="d5" value="0">
+       </td>
+       <td><div id="ddd5"><button onclick="setDigIO ('5')">Set</button></div></td>
+       <td><button id="bi5" onclick="setAsIO_in ('5')">INPUT</button></td>
+       <td><button id="bo5" onclick="setAsIO_out ('5')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd6">D6: </div></td>
+       <td>
+           <input type="hidden" id="dir6" value="0">
+           <input type="text" id="d6" value="0">
+       </td>
+       <td><div id="ddd6"><button onclick="setDigIO ('6')">Set</button></div></td>
+       <td><button id="bi6" onclick="setAsIO_in ('6')">INPUT</button></td>
+       <td><button id="bo6" onclick="setAsIO_out ('6')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd7">D7: </div></td>
+       <td>
+           <input type="hidden" id="dir7" value="0">
+           <input type="text" id="d7" value="0">
+       </td>
+       <td><div id="ddd7"><button onclick="setDigIO ('7')">Set</button></div></td>
+       <td><button id="bi7" onclick="setAsIO_in ('7')">INPUT</button></td>
+       <td><button id="bo7" onclick="setAsIO_out ('7')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd8">D8: </div></td>
+       <td>
+           <input type="hidden" id="dir8" value="0">
+           <input type="text" id="d8" value="0">
+       </td>
+       <td><div id="ddd8"><button onclick="setDigIO ('8')">Set</button></div></td>
+       <td><button id="bi8" onclick="setAsIO_in ('8')">INPUT</button></td>
+       <td><button id="bo8" onclick="setAsIO_out ('8')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="da0">A0: </div></td>
+       <td><input type="text" id="a0" value="0"></td>
+       <td></td><td></td><td></td>
+    </tr>
+  </table>
+</center>
+</body>
+</html>

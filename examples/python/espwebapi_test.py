@@ -1,6 +1,6 @@
 #   ESP8266 http io server test.
 #
-#   Gola in life:
+#   Goal in life:
 #     Tests exposed basic wiring functions: pinMode, digitalRead, digitalWrite,
 #     analogRead and analogWrite from the ESP8266 http server.
 #
