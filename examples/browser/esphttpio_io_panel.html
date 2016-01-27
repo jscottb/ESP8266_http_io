@@ -10,7 +10,7 @@
    THIS EXAMPLE IS VERY ALPHA CODE!!!! A work in progress.
 -->
 <html>
-<body onload="setIOlines ( )">
+<body onload="initDisplayAndPins ( )">
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
           type="text/javascript" charset="utf-8">
   </script>
@@ -20,18 +20,24 @@
 var DEVICE_URL = 'http://espio_01.local'
 var DO_WORK = true
 var work_delay = 6000 // READ INPUTS every 6 seconds
-var io_pins = [
-    {pin: "D0", type: 'GPIO', direction: "INPUT"},
-    {pin: "D1", type: 'GPIO', direction: "INPUT"},
-    {pin: "D2", type: 'GPIO', direction: "INPUT"},
-    {pin: "D3", type: 'GPIO', direction: "INPUT"},
-    {pin: "D4", type: 'GPIO', direction: "INPUT"},
-    {pin: "D5", type: 'GPIO', direction: "INPUT"},
-    {pin: "D6", type: 'GPIO', direction: "INPUT"},
-    {pin: "D7", type: 'GPIO', direction: "INPUT"},
-    {pin: "D8", type: 'GPIO', direction: "INPUT"},
-    {pin: "A0", type: 'ANALOG', direction: "INPUT"}
-];
+var io_pins = []
+io_pins[0] = {pin: "D0", type: 'GPIO', direction: "INPUT"};
+io_pins[1] = {pin: "D1", type: 'GPIO', direction: "INPUT"};
+io_pins[2] = {pin: "D2", type: 'GPIO', direction: "INPUT"};
+io_pins[3] = {pin: "D3", type: 'GPIO', direction: "INPUT"};
+io_pins[4] = {pin: "D4", type: 'GPIO', direction: "INPUT"};
+io_pins[5] = {pin: "D5", type: 'GPIO', direction: "INPUT"};
+io_pins[6] = {pin: "D6", type: 'GPIO', direction: "INPUT"};
+io_pins[7] = {pin: "D7", type: 'GPIO', direction: "INPUT"};
+io_pins[8] = {pin: "D8", type: 'GPIO', direction: "INPUT"};
+io_pins[9] = {pin: "na", type: 'na', direction: "na"};
+io_pins[10] = {pin: "A0", type: 'ANALOG', direction: "INPUT"};
+io_pins[11] = {pin: "na", type: 'na', direction: "na"};
+io_pins[12] = {pin: "na", type: 'na', direction: "na"};
+io_pins[13] = {pin: "na", type: 'na', direction: "na"};
+io_pins[14] = {pin: "na", type: 'na', direction: "na"};
+io_pins[15] = {pin: "na", type: 'na', direction: "na"};
+io_pins[16] = {pin: "D16", type: 'GPIO', direction: "OUTPUT"};
 
 var tmr = setTimeout (loop, 1000); // Start off 1 sec after load
 
@@ -75,7 +81,7 @@ function loop ( ) {
       tmr = setTimeout (loop, work_delay);
 }
 
-function setIOlines ( ) {
+function initDisplayAndPins ( ) {
     var pin;
 
     for (var i = 0; i < io_pins.length; i++) {
@@ -108,25 +114,28 @@ function setWorkLoop (state) {
 }
 
 function setDigIO (pin) {
-   var value = $("#d" + pin).val ();
+   var value = $("#d" + pin).val ( );
+   pin = io_pins[parseInt (pin)].pin.substring (1, io_pins[pin].pin.length);
    digitalWrite (pin, value);
 }
 
 function setAsIO_in (pin) {
    $("#ddd" + pin).hide ( );
    $("#dd" + pin).css({"background-color": "blue"});
+//   io_pins[pin].direction = "INPUT";
+   pin = io_pins[parseInt (pin)].pin.substring (1, io_pins[pin].pin.length);
    pinMode (pin, "INPUT");
-   io_pins[pin].direction = 'INPUT';
 }
 
 function setAsIO_out (pin) {
    $("#ddd" + pin).show ( );
    $("#dd" + pin).css({"background-color": "red"});
+//   io_pins[pin].direction = "OUTPUT";
+   pin = io_pins[parseInt (pin)].pin.substring (1, io_pins[pin].pin.length);
    pinMode (pin, "OUTPUT");
-   io_pins[pin].direction = 'OUTPUT';
 }
 
-// Callback funtion to update the page elements
+// Callback function to update the page elements
 function io_display (io, state) {
      $("#" + io).val (state);
 }
@@ -226,6 +235,16 @@ function io_display (io, state) {
        <td><div id="ddd8"><button onclick="setDigIO ('8')">Set</button></div></td>
        <td><button id="bi8" onclick="setAsIO_in ('8')">INPUT</button></td>
        <td><button id="bo8" onclick="setAsIO_out ('8')">OUTPUT</button></td>
+    </tr>
+    <tr>
+       <td><div id="dd16">D16: </div></td>
+       <td>
+           <input type="hidden" id="dir16" value="0">
+           <input type="text" id="d16" value="0">
+       </td>
+       <td><div id="ddd16"><button onclick="setDigIO ('16')">Set</button></div></td>
+       <td><button id="bi16" onclick="setAsIO_in ('16')">INPUT</button></td>
+       <td><button id="bo16" onclick="setAsIO_out ('16')">OUTPUT</button></td>
     </tr>
     <tr>
        <td><div id="da0">A0: </div></td>
