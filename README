@@ -16,8 +16,6 @@ IP returned, then add that to the DEVICE_URL in the example you run from on of
 the examples included.
 
 TODO:
-   - Add mDNS registration and or other like services
    - Add some form of security (thinking stages now)
-   - Possibly add a io control page for browser IO changes
    - Add servo calls to example
    - Add mDNS query to example
