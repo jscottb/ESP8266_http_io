@@ -67,23 +67,27 @@ function analogRead (pin, callback, io) {
 }
 
 function loop ( ) {
+   var delay_tm = 0;
+
    if (DO_WORK || ONESHOT) {
      for (var i = 0; i < io_pins.length; i++) {
         if (io_pins[i].type == 'GPIO') {
             if (io_pins[i].direction == 'INPUT') {
                var pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
-               digitalRead (pin, io_display, "d" + pin);
+               // Timout added to help space the http calls apart a bit.
+               setTimeout (digitalRead (pin, io_display, "d" + pin), delay_tm);
             }
         }
 
         if (io_pins[i].type == 'ANALOG') {
            var pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
-           analogRead (pin, io_display, "a" + pin);
+           setTimeout (analogRead (pin, io_display, "a" + pin), delay_tm);
         }
      }
 
      if (DO_WORK) {
         tmr = setTimeout (loop, work_delay);
+        delay_tm = 100;
      }
 
      ONESHOT = false;
