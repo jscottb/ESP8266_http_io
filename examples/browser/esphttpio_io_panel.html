@@ -83,11 +83,12 @@ function loop ( ) {
            var pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
            setTimeout (analogRead (pin, io_display, "a" + pin), delay_tm);
         }
+
+        delay_tm = 100;
      }
 
      if (DO_WORK) {
         tmr = setTimeout (loop, work_delay);
-        delay_tm = 100;
      }
 
      ONESHOT = false;
