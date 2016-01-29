@@ -128,7 +128,7 @@ function setWorkLoop (state) {
       DO_WORK = false;
    }
 
-   if (state == 'ONSHOT') {
+   if (state == 'ONESHOT') {
       clearTimeout (tmr);
       ONESHOT = true;
       loop ( );
