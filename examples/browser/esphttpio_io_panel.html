@@ -20,7 +20,7 @@
 var DEVICE_URL = 'http://espio_01.local'
 var DO_WORK = true
 var ONESHOT = false
-var work_delay = 8000 // READ INPUTS every 8 seconds
+var work_delay = 10000 // READ INPUTS every 10 seconds
 var io_pins = []
 io_pins[0] = {pin: "D0", type: 'GPIO', direction: "INPUT"};
 io_pins[1] = {pin: "D1", type: 'GPIO', direction: "INPUT"};
@@ -75,9 +75,13 @@ function loop ( ) {
                digitalRead (pin, io_display, "d" + pin);
             }
         }
+
+        if (io_pins[i].type == 'ANALOG') {
+           var pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
+           analogRead (pin, io_display, "a" + pin);
+        }
      }
 
-     analogRead ("0", io_display, "a0");
      if (DO_WORK) {
         tmr = setTimeout (loop, work_delay);
      }
@@ -120,6 +124,7 @@ function setWorkLoop (state) {
    }
 
    if (state == 'ONSHOT') {
+      clearTimeout (tmr);
       ONESHOT = true;
       loop ( );
    }
