@@ -18,19 +18,20 @@
 <title>ESP8266 Browser IO Control Panel</title>
 <script type="text/javascript">
 var DEVICE_URL = 'http://espio_01.local'
-var DO_WORK = true
+var DO_WORK = false
 var ONESHOT = false
 var work_delay = 10000 // READ INPUTS every 10 seconds
+var tmr
 var io_pins = []
 io_pins[0] = {pin: "D0", type: 'GPIO', direction: "INPUT"};
 io_pins[1] = {pin: "D1", type: 'GPIO', direction: "INPUT"};
-io_pins[2] = {pin: "D2", type: 'GPIO', direction: "INPUT"};
-io_pins[3] = {pin: "D3", type: 'GPIO', direction: "INPUT"};
-io_pins[4] = {pin: "D4", type: 'GPIO', direction: "INPUT"};
+io_pins[2] = {pin: "D2", type: 'GPIO', direction: "OUTPUT"};
+io_pins[3] = {pin: "D3", type: 'GPIO', direction: "OUTPUT"};
+io_pins[4] = {pin: "D4", type: 'GPIO', direction: "OUTPUT"};
 io_pins[5] = {pin: "D5", type: 'GPIO', direction: "INPUT"};
-io_pins[6] = {pin: "D6", type: 'GPIO', direction: "INPUT"};
-io_pins[7] = {pin: "D7", type: 'GPIO', direction: "INPUT"};
-io_pins[8] = {pin: "D8", type: 'GPIO', direction: "INPUT"};
+io_pins[6] = {pin: "D6", type: 'GPIO', direction: "OUTPUT"};
+io_pins[7] = {pin: "D7", type: 'GPIO', direction: "OUTPUT"};
+io_pins[8] = {pin: "D8", type: 'GPIO', direction: "OUTPUT"};
 io_pins[9] = {pin: "na", type: 'na', direction: "na"};
 io_pins[10] = {pin: "A0", type: 'ANALOG', direction: "INPUT"};
 io_pins[11] = {pin: "na", type: 'na', direction: "na"};
@@ -39,8 +40,6 @@ io_pins[13] = {pin: "na", type: 'na', direction: "na"};
 io_pins[14] = {pin: "na", type: 'na', direction: "na"};
 io_pins[15] = {pin: "na", type: 'na', direction: "na"};
 io_pins[16] = {pin: "D16", type: 'GPIO', direction: "OUTPUT"};
-
-var tmr = setTimeout (loop, 1000); // Start off 1 sec after load
 
 function pinMode (pin, state) {
    var requestURL = DEVICE_URL + "/pinMode?" + pin + "," + state;
@@ -97,6 +96,7 @@ function loop ( ) {
 
 function initDisplayAndPins ( ) {
     var pin;
+    var delay_tm = 0;
 
     build_io_display ( );
 
@@ -104,33 +104,44 @@ function initDisplayAndPins ( ) {
         pin = io_pins[i].pin.substring (1, io_pins[i].pin.length);
         if (io_pins[i].type == 'GPIO') {
             if (io_pins[i].direction == 'OUTPUT') {
-               setAsIO_out (pin);
+               setTimeout (setAsIO_out (pin), delay_tm);
                $("#dd" + pin).css({"background-color": "red"});
             }
             if (io_pins[i].direction == 'INPUT') {
-               setAsIO_in (pin);
+               setTimeout (setAsIO_in (pin), delay_tm);
                $("#dd" + pin).css({"background-color": "blue"});
             }
             $("#bo" + i).css({"background-color": "red"});
             $("#bi" + i).css({"background-color": "blue"});
         }
+
+        delay_tm = 200;
     }
+
+    setWorkLoop ("ON");
+    tmr = setTimeout (loop, work_delay);
 }
 
 function setWorkLoop (state) {
    if (state == 'ON') {
       tmr = setTimeout (loop, work_delay);
       DO_WORK = true;
+      $('#loop_off').prop("disabled", false);
+      $('#loop_on').prop("disabled", true);
    }
 
    if (state == 'OFF') {
       clearTimeout (tmr);
       DO_WORK = false;
+      $('#loop_off').prop("disabled", true);
+      $('#loop_on').prop("disabled", false);
    }
 
    if (state == 'ONESHOT') {
       clearTimeout (tmr);
       ONESHOT = true;
+      $('#loop_off').prop("disabled", true);
+      $('#loop_on').prop("disabled", false);
       loop ( );
    }
 }
@@ -188,8 +199,8 @@ function io_display (io, state) {
 </head>
 <center>
   <p>Work loop:
-  <button onclick="setWorkLoop ('ON')">Work Loop On</button>
-  <button onclick="setWorkLoop ('OFF')">Work Loop Off</button></p>
+  <button id="loop_on" onclick="setWorkLoop ('ON')">Work Loop On</button>
+  <button id="loop_off" onclick="setWorkLoop ('OFF')">Work Loop Off</button></p>
   <button onclick="setWorkLoop ('ONESHOT')">Oneshot Update</button></p>
   <table id="io_lines">
   </table>
