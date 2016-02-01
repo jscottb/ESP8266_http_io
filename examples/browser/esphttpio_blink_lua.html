@@ -1,0 +1,61 @@
+<!--
+   ESP8266 http io server test.
+
+   Goal in life:
+     Blink an LED every second.
+
+   Written By - Scott Beasley 2016.
+   Public domain. Free to use or change. Enjoy :)
+-->
+<html>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"
+          type="text/javascript" charset="utf-8">
+  </script>
+<head>
+<title>ESP8266 Browser Blink</title>
+<script type="text/javascript">
+var DEVICE_URL = 'http://192.168.2.77'
+var LED_STATE = 'LOW'
+var DO_BLINK = true
+var tmr
+
+pinMode ('0','OUTPUT'); // Set the pin as OUTPUT
+setTimeout (blink, 2000);
+
+function pinMode (pin, state) {
+   var requestURL = DEVICE_URL + "/pinMode?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function digitalWrite (pin, state) {
+   var requestURL = DEVICE_URL + "/digitalWrite?" + pin + "," + state;
+   $.get (requestURL);
+}
+
+function blink ( ) {
+   LED_STATE = (LED_STATE == 'LOW' ? 'HIGH' : 'LOW');
+   digitalWrite ('0', LED_STATE);
+
+   if (DO_BLINK)
+      tmr = setTimeout (blink, 1000);
+}
+
+function setBlink (state) {
+   if (state == 'ON') {
+      tmr = setTimeout (blink, 1000);
+      DO_BLINK = true;
+   }
+
+   if (state == 'OFF') {
+      clearTimeout (tmr);
+      DO_BLINK = false;
+   }
+}
+</script>
+</head>
+<center>
+  LED -->
+  <button onclick="setBlink ('ON')">Led Blink On</button>
+  <button onclick="setBlink ('OFF')">Led Blink Off</button>
+</center>
+</html>
