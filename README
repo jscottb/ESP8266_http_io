@@ -19,3 +19,9 @@ TODO:
    - Add some form of security (thinking stages now)
    - Add servo calls to example
    - Add mDNS query to example
+
+Added:
+   - NodeMCU Lua vertion of the io server. Only does pinMode, digitalRead,
+     digitalWrite and analogRead for now. Again, alpha code. You will have to
+     edit the examples and add the IP given to test it.
+     
