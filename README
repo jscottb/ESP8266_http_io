@@ -19,9 +19,11 @@ TODO:
    - Add some form of security (thinking stages now)
    - Add servo calls to example
    - Add mDNS query to example
-
+   - Add a common GPIO number system between the Ardiono C++ side and NodeMcu
+     Lua side.
+   - Add Servo and pwm support to the Lua code.
+   
 Added:
-   - NodeMCU Lua vertion of the io server. Only does pinMode, digitalRead,
+   - NodeMCU Lua version of the io server. Only does pinMode, digitalRead,
      digitalWrite and analogRead for now. Again, alpha code. You will have to
      edit the examples and add the IP given to test it.
-     
