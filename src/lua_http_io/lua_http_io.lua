@@ -47,9 +47,14 @@ end
 
 function PinMode (parms)
    local pin, val, strt_ndx, end_ndx, mode
+   local str_pin = ""
 
    strt_ndx, end_ndx = string.find (parms, "([^,]+)")
-   pin = tonumber (string.sub (parms, strt_ndx, end_ndx))
+   str_pin = string.sub (parms, strt_ndx, end_ndx)
+   pin = ArduinoPin2Node (str_pin)
+   if pin == -1 then
+      return (pin_error ( ))
+   end
    val = string.sub (parms, end_ndx + 2)
 
    if val == "INPUT" then
@@ -67,10 +72,15 @@ end
 
 function DigitalRead (parms)
    local raw_val = 0
+   local pin = -1
    local val = ""
    local ret_json = ""
 
-   raw_val = gpio.read (tonumber (parms))
+   pin = ArduinoPin2Node (parms)
+   if pin == -1 then
+      return (pin_error ( ))
+   end
+   raw_val = gpio.read (pin)
 
    if raw_val == 0 then
       val = "LOW"
@@ -86,9 +96,14 @@ end
 
 function DigitalWrite (parms)
    local pin, val, strt_ndx, end_ndx, state
+   local str_pin = ""
 
    strt_ndx, end_ndx = string.find (parms, "([^,]+)")
-   pin = tonumber (string.sub (parms, strt_ndx, end_ndx))
+   str_pin = string.sub (parms, strt_ndx, end_ndx)
+   pin = ArduinoPin2Node (str_pin)
+   if pin == -1 then
+      return (pin_error ( ))
+   end
    val = string.sub (parms, end_ndx + 2)
 
    if val == "HIGH" then
@@ -117,12 +132,36 @@ function AnalogWrite (parms)
    local pin, val, strt_ndx, end_ndx
 
    strt_ndx, end_ndx = string.find (parms, "([^,]+)")
-   pin = tonumber (string.sub (parms, strt_ndx, end_ndx))
+   str_pin = string.sub (parms, strt_ndx, end_ndx)
+   pin = ArduinoPin2Node (str_pin)
+   if pin == -1 then
+      return (pin_error ( ))
+   end
    val = string.sub (parms, end_ndx + 2)
 
    -- Add code to setup and start PWM here
 
    return ("{\n\t\"return_code\": 0\n}")
+end
+
+function ArduinoPin2Node (mcupin)
+   local pins = {["16"] = 0, ["5"] = 1, ["4"] = 2, ["0"] = 3, ["2"] = 4,
+                 ["14"] = 5, ["12"] = 6, ["13"] = 7, ["15"] = 8,
+                 ["3"] = 9, ["1"] = 10}
+   local ret_val = -1
+
+   for key, val in pairs (pins) do
+      if key == mcupin then
+         ret_val = val
+         break
+      end
+   end
+
+   return (ret_val)
+end
+
+function pin_error ( )
+   return ("{\n\t\"return_code\": 1\n,\n\t\"error_txt\": \"Pin not defined\"\n}")
 end
 
 function wait_for_wifi_conn ( )

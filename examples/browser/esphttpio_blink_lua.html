@@ -14,12 +14,12 @@
 <head>
 <title>ESP8266 Browser Blink</title>
 <script type="text/javascript">
-var DEVICE_URL = 'http://192.168.2.77'
+var DEVICE_URL = 'http://192.168.2.72'
 var LED_STATE = 'LOW'
 var DO_BLINK = true
 var tmr
 
-pinMode ('0','OUTPUT'); // Set the pin as OUTPUT
+pinMode ('16','OUTPUT'); // Set the pin as OUTPUT
 setTimeout (blink, 2000);
 
 function pinMode (pin, state) {
@@ -34,7 +34,7 @@ function digitalWrite (pin, state) {
 
 function blink ( ) {
    LED_STATE = (LED_STATE == 'LOW' ? 'HIGH' : 'LOW');
-   digitalWrite ('0', LED_STATE);
+   digitalWrite ('16', LED_STATE);
 
    if (DO_BLINK)
       tmr = setTimeout (blink, 1000);

@@ -17,7 +17,8 @@
 <head>
 <title>ESP8266 Browser IO Control Panel</title>
 <script type="text/javascript">
-var DEVICE_URL = 'http://espio_01.local'
+//var DEVICE_URL = 'http://espio_01.local'
+var DEVICE_URL = 'http://192.168.2.72'
 var DO_WORK = false
 var ONESHOT = false
 var work_delay = 10000 // READ INPUTS every 10 seconds
@@ -31,10 +32,10 @@ io_pins[4] = {pin: "D4", type: 'GPIO', direction: "OUTPUT"};
 io_pins[5] = {pin: "D5", type: 'GPIO', direction: "INPUT"};
 io_pins[6] = {pin: "D6", type: 'GPIO', direction: "OUTPUT"};
 io_pins[7] = {pin: "D7", type: 'GPIO', direction: "OUTPUT"};
-io_pins[8] = {pin: "D8", type: 'GPIO', direction: "OUTPUT"};
+io_pins[8] = {pin: "D8", type: 'GPIO', direction: "INPUT"};
 io_pins[9] = {pin: "na", type: 'na', direction: "na"};
-io_pins[10] = {pin: "A0", type: 'ANALOG', direction: "INPUT"};
-io_pins[11] = {pin: "na", type: 'na', direction: "na"};
+io_pins[10] = {pin: "na", type: 'na', direction: "na"};
+io_pins[11] = {pin: "A0", type: 'ANALOG', direction: "INPUT"};
 io_pins[12] = {pin: "na", type: 'na', direction: "na"};
 io_pins[13] = {pin: "na", type: 'na', direction: "na"};
 io_pins[14] = {pin: "na", type: 'na', direction: "na"};
@@ -119,12 +120,11 @@ function initDisplayAndPins ( ) {
     }
 
     setWorkLoop ("ON");
-    tmr = setTimeout (loop, work_delay);
 }
 
 function setWorkLoop (state) {
    if (state == 'ON') {
-      tmr = setTimeout (loop, work_delay);
+      tmr = setTimeout (loop, work_delay + 5000);
       DO_WORK = true;
       $('#loop_off').prop("disabled", false);
       $('#loop_on').prop("disabled", true);
