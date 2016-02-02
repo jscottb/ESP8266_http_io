@@ -19,7 +19,6 @@
 // Prototype, each and every day...
 bool request_is (String, String);
 char * getstrfld (char *strbuf, int fldno, int ofset, char *sep, char *retstr);
-void serverloop (void);
 char * strpbrk (const char *s1, const char *s2);
 
 // Exposed functions
@@ -34,8 +33,8 @@ void ServoSet (char *parms);
 void ServoRead (char *parms);
 
 // Define your Wifi info here
-#define SSID "YOUR SSID"
-#define PASSWD "YOUR PASSWD"
+#define SSID ""
+#define PASSWD ""
 
 #define BOARDNAME "espio_01"
 
@@ -58,7 +57,6 @@ int servosinuse = 0;
 void setup ( )
 {
     Serial.begin (9600);
-    delay (10);
 
     servosinuse = 0;
 
@@ -105,12 +103,7 @@ void setup ( )
 
 void loop ( )
 {
-    serverloop ( );
-}
-
-void serverloop ( )
-{
-   char req_parms[20], *req_chararray;
+   char req_parms[30], *req_chararray;
 
    // Look for connections
    WiFiClient client = server.available ( );
@@ -128,7 +121,7 @@ void serverloop ( )
 
    // Read the request data (first line only for our needs)
    String request = client.readStringUntil ('\n');
-   client.flush ( ); // Clear anything left in the request.
+//   client.flush ( ); // Clear anything left in the request.
 
    if (request_is (request, "/favicon.ico")) {
       client.println ("HTTP/1.1 200 OK");
@@ -136,6 +129,8 @@ void serverloop ( )
       client.print ("Content-Length: 0");
       client.println ("Connection: close");
       client.println("");
+      client.flush ( );
+      client.stop ( );
       return;
    }
 
@@ -250,7 +245,6 @@ void serverloop ( )
        Serial.println (json_ret);
    #endif
 
-   delay (5); // Dwell a bit before next request.
    #ifdef DEBUG
        Serial.println ("Client disconnected\n");
    #endif
