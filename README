@@ -19,11 +19,15 @@ TODO:
    - Add some form of security (thinking stages now)
    - Add servo calls to example
    - Add mDNS query to example
-   - Add a common GPIO number system between the Ardiono C++ side and NodeMcu
-     Lua side.
    - Add Servo and pwm support to the Lua code.
-   
+
 Added:
+   02-01-2016
    - NodeMCU Lua version of the io server. Only does pinMode, digitalRead,
      digitalWrite and analogRead for now. Again, alpha code. You will have to
      edit the examples and add the IP given to test it.
+   02-02-2016
+      - Added a common GPIO number system between the Ardiono C++ side and
+        NodeMcu lua side. The lua server uses the Arduino pin numbers now. The
+        LED pin on the mcu board is now pin 16.
+          
