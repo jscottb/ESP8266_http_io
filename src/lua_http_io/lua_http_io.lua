@@ -79,7 +79,7 @@ function DigitalRead (parms)
    end
 
    ret_json = "{\n\t\"data_value\": \"\"" .. val .. "\""
-   ret_json = ret_json .. ",\n\t\"raw_data\": " .. raw_data
+   ret_json = ret_json .. ",\n\t\"raw_data\": " .. raw_val
    ret_json = ret_json .. ",\n\t\"return_code\": 0\n}"
    return (ret_json)
 end
@@ -115,7 +115,6 @@ end
 
 function AnalogWrite (parms)
    local pin, val, strt_ndx, end_ndx
-print ("in AnalogWrite " .. parms)
 
    strt_ndx, end_ndx = string.find (parms, "([^,]+)")
    pin = tonumber (string.sub (parms, strt_ndx, end_ndx))
