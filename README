@@ -19,7 +19,8 @@ TODO:
    - Add some form of security (thinking stages now)
    - Add servo calls to example
    - Add mDNS query to example
-   - Add Servo and pwm support to the Lua code.
+   - Add Servo and pwm support to the lua code.
+   - May add Board type set/query to copy with pin assignments.
 
 Added:
    02-01-2016
@@ -29,5 +30,7 @@ Added:
    02-02-2016
       - Added a common GPIO number system between the Ardiono C++ side and
         NodeMcu lua side. The lua server uses the Arduino pin numbers now. The
-        LED pin on the mcu board is now pin 16.
-          
+        LED pin on the mcu board is now pin 16. Other pins follow suit with the
+        Arduino numbers.
+   02-03-2016
+      - Added Tcl Blink example
