@@ -48,18 +48,18 @@ void setup ( )
     servosinuse = 0;
 
     // Mark all servo slots as free on start.
-    // for (int i = 0; i < 8; i++) {
-    //     userservos[i].pin = -1;
-    // }
+    for (int i = 0; i < 8; i++) {
+        userservos[i].pin = -1;
+    }
 
     // Connect to the WiFi network
     Serial.print ("\nConnecting to: ");
 
     // Print the IP address
-    Serial.print ("Use this URL to connect: ");
-    Serial.print ("http://");
-//    Serial.print (WiFi.localIP());
-    Serial.println ("/");
+//     Serial.print ("Use this URL to connect: ");
+//     Serial.print ("http://");
+// //    Serial.print (WiFi.localIP());
+//     Serial.println ("/");
 }
 
 void loop ( )
