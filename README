@@ -23,6 +23,9 @@ TODO:
    - May add Board type set/query to copy with pin assignments.
 
 Added:
+   04-11-2020
+   - Added version for Serial adaptors like the ESP or HLK-RM04 confiured as a 
+     serial WIFI connected to an Arduino.
    02-01-2016
    - NodeMCU Lua version of the io server. Only does pinMode, digitalRead,
      digitalWrite and analogRead for now. Again, alpha code. You will have to
