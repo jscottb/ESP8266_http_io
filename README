@@ -25,7 +25,7 @@ TODO:
 Added:
    04-11-2020
    - Added version for Serial adaptors like the ESP or HLK-RM04 confiured as a 
-     serial WIFI connected to an Arduino.
+     serial WIFI connected to an Arduino. More work will need to be done for ESP's.
    02-01-2016
    - NodeMCU Lua version of the io server. Only does pinMode, digitalRead,
      digitalWrite and analogRead for now. Again, alpha code. You will have to
